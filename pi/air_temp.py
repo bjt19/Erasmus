@@ -71,27 +71,6 @@ meas_temp = smbus2.i2c_msg.write(0x40,[0xe0])
 
 while(1):
 	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    #accel
-	#x1 = bus.read_byte_data(0x18,0x28)
-	#x2 = bus.read_byte_data(0x18,0x29)
-
-	#y1 = bus.read_byte_data(0x18,0x2a)
-	#y2 = bus.read_byte_data(0x18,0x2b)
-
-	#z1 = bus.read_byte_data(0x18,0x2c)
-	#z2 = bus.read_byte_data(0x18,0x2d)
-
-    #x = x1+x2*256
-	#if x>32767:
-	#	x-=65546
-
-	#y = y1+y2*256
-	#if y>32767:
-	#	y-=65546
-
-	#z = z1+z2*256
-	#if z>32767:
-	#	z-=65546
 
 	#humid
 	bus.i2c_rdwr(meas_humid)
@@ -149,7 +128,10 @@ while(1):
 #	tvoc = int.from_bytes(read_result.buf[2],'big')*256 + int.from_bytes(read_result.buf[3],'big')
 #	alg_status = int.from_bytes(read_result.buf[5],'big')
 #	error_id = int.from_bytes(read_result.buf[6],'big')
-	print("air quality: ",co2)
+	if co2>=400 and co2<=8192:
+		print("air quality: ",co2)
+	else:
+		print("invalid co2")
 #	print("binary air quality: ",bin(co2))
 #	print("tvoc: ",tvoc)
 #	print("alg_status: ",alg_status)
@@ -192,6 +174,6 @@ while(1):
 		MSG_INFO = client.publish("IC.embedded/Erasmus/test",msg_th)
 		print(msg_th)
 
-
+	#MSG_INFO = client.publish("IC.embedded/Erasmus/test2","hello")
 	time.sleep(1)
 #	time.sleep(2)
