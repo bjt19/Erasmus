@@ -123,7 +123,10 @@ while(1):
 #	co2 = int.from_bytes(read_result.buf[0],'big')*256 + int.from_bytes(read_result.buf[1],'big')
 	co2_high = (int.from_bytes(read_result.buf[0],'big')&(0b01111111))*256
 	co2_low = int.from_bytes(read_result.buf[1],'big')
+	tvoc_high = (int.from_bytes(read_result.buf[2],'big')&(0b01111111))*256
+	tvoc_low = int.from_bytes(read_result.buf[3],'big')
 	co2 = co2_high + co2_low
+	tvoc = tvoc_high + tvoc_low
 	#co2 = int.from_bytes(read_result.buf[0],'big')
 #	tvoc = int.from_bytes(read_result.buf[2],'big')*256 + int.from_bytes(read_result.buf[3],'big')
 #	alg_status = int.from_bytes(read_result.buf[5],'big')
@@ -132,6 +135,10 @@ while(1):
 		print("air quality: ",co2)
 	else:
 		print("invalid co2")
+	if tvoc>=0 and tvoc<=1187:
+		print("tvoc: ", tvoc)
+	else:
+		print("invalid tvoc")
 #	print("binary air quality: ",bin(co2))
 #	print("tvoc: ",tvoc)
 #	print("alg_status: ",alg_status)
@@ -157,22 +164,30 @@ while(1):
 
 	air_data = {
         	"co2" : co2,
+		"tvoc" : tvoc,
     	}
 
+	sensor_data = {
+		"humidity" : humid,
+		"temp" : temp,
+		#"co2" : co2,
+		"tvoc" : tvoc,
+	}
 	#msg_accel = json.dumps(accel_data)
-	msg_th = json.dumps(th_data)
-	msg_co2 = json.dumps(air_data)
-#	print(msg_accel)
+	#msg_th = json.dumps(th_data)
+	#msg_co2 = json.dumps(air_data)
+	msg = json.dumps(sensor_data)
+	#print(msg_accel)
 	print("config: ",config)
 #	MSG_INFO = client.publish("IC.embedded/Erasmus/test",msg_accel)
 
-	if(config == "co2"):
-       		MSG_INFO = client.publish("IC.embedded/Erasmus/test2",msg_co2)
-        	print(msg_co2)
+	#if(config == "co2"):
+	MSG_INFO = client.publish("IC.embedded/Erasmus/test2",msg)
+	print(msg)
 
-	if(config == "th"):
-		MSG_INFO = client.publish("IC.embedded/Erasmus/test2",msg_th)
-		print(msg_th)
+	#if(config == "th"):
+		#MSG_INFO = client.publish("IC.embedded/Erasmus/test2",msg_th)
+		#print(msg_th)
 
 	#MSG_INFO = client.publish("IC.embedded/Erasmus/test2","hello")
 	time.sleep(1)
