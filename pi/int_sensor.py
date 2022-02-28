@@ -9,7 +9,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("IC.embedded/Erasmus/ext_sensor")
 
 def on_message(client, userdata, msg):
-	print(msg.topic+" "+str(msg.payload))
+	print("a msg received")
+#	print(msg.topic+" "+str(msg.payload))
 	msg.payload = msg.payload.decode("utf-8")	
 
 	global desired_temp
@@ -17,31 +18,28 @@ def on_message(client, userdata, msg):
 	global max_humid
 	global mode
 	global enable   #or on
-	print("a msg received")
 	if msg.topic == "IC.embedded/Erasmus/user":
-		print("msg received from user")
+		print("msg received from user: ",msg.payload)
 		desired_temp, min_humid, max_humid, mode, enable = msg.payload.split(',')
-		print("desired_temp")
-		print("min_humid")
-		print("max_humid")
-		print("mode")
-		print("off")
 
-		print("received mode: ",mode)
 		desired_temp = float(desired_temp)
 		min_humid = float(min_humid)
 		max_humid = float(max_humid)
 		enable = int(enable)
-
+		mode = int(mode)
+		print("desired temp received: ",desired_temp)
+		print("min_humid: ",mind_humid)
+		print("max_humid: ",max_humid)
 		if(enable == 0):
 			mode = 5
+		print("received mode: ",mode)
 
 	global ext_temp
 	global ext_humid
 	global ext_tvoc
 
 	if msg.topic == "IC.embedded/Erasmus/ext_sensor":
-		print("msg received from ext sensor")
+		print("msg received from ext sensor: ",msg.payload)
 		ext_temp,ext_humid,ext_tvoc = msg.payload.split(",")
 
 
@@ -68,51 +66,50 @@ def setup_aq_sensors():
     bus.i2c_rdwr(read_result)
     print("Entering measuring mode")
 
-def read_humid():
+def read_humid(curr_humid):
     bus.i2c_rdwr(meas_humid)
     time.sleep(0.1)
     read_result = smbus2.i2c_msg.read(0x40,2)
     bus.i2c_rdwr(read_result)
 
     humid = int.from_bytes(read_result.buf[0]+read_result.buf[1],'big')
-    humid = (125*humid/65536)-6
-    return humid
+    new_humid = (125*humid/65536)-6
+    if new_humid>=0 and new_humid<=80:
+        return new_humid
+    else:
+        print("invalid humidity")
+        return curr_humid
 
-def read_temp():
+def read_temp(curr_temp):
     bus.i2c_rdwr(meas_temp)
     time.sleep(0.1)
     read_result = smbus2.i2c_msg.read(0x40,2)
     bus.i2c_rdwr(read_result)
 
     temp = int.from_bytes(read_result.buf[0]+read_result.buf[1],'big')
-    temp = (175.72*temp/65536)-46.85
-    return temp
+    new_temp = (175.72*temp/65536)-46.85
+    if new_temp>=-10 and new_temp <=85:
+        return new_temp
+    else:
+        print("invalid temp")
+        return curr_temp
 
-def read_tvoc():         #might want to remove c02, clean up this function
+def read_tvoc(curr_tvoc):         #might want to remove c02, clean up this function
     meas_co2 = smbus2.i2c_msg.write(0x5A,[0x02])
     bus.i2c_rdwr(meas_co2)
     read_result  = smbus2.i2c_msg.read(0x5A, 8)
     bus.i2c_rdwr(read_result)
-    co2_high = (int.from_bytes(read_result.buf[0],'big')&(0b01111111))*256
-    co2_low = int.from_bytes(read_result.buf[1],'big')
     tvoc_high = (int.from_bytes(read_result.buf[2],'big')&(0b01111111))*256
     tvoc_low = int.from_bytes(read_result.buf[3],'big')
-    co2 = co2_high + co2_low
-    tvoc = tvoc_high + tvoc_low
-    if co2>=400 and co2<=8192:
-        print("air quality: ",co2)
-    else:
-        print("invalid co2")
-    if tvoc>=0 and tvoc<=1187:
-        print("tvoc: ", tvoc)
+    new_tvoc = tvoc_high + tvoc_low
+    if new_tvoc>=0 and new_tvoc<=1187:
+        return new_tvoc
     else:
         print("invalid tvoc")
-    return tvoc
+        return curr_tvoc
 
 def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_humid,ext_humid,int_tvoc,ext_tvoc,window_status,heater_status,ac_status):
 
-    print("process mode: ",mode)
-    print("process mode type: " ,type(mode))
     #default values
     w_t = 0.6
     w_h = 0.2
@@ -132,7 +129,7 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
         w_t = 0.4
         w_h = 0.2
         w_a = 0.4
-    if mode == 4 :
+    elif mode == 4 :
         print("mode: humidity priority")
         w_t = 0.4
         w_h = 0.4
@@ -168,12 +165,17 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
     air_cont =  - int_tvoc - ext_tvoc
     air_cont = (air_cont*100)/1187    #range is 0 to 1187 
 
+    #desired temp achiveable without ac/heater
     temp_achievable = ((abs(int_temp - desired_temp))<temp_thresh) & ((abs(ext_temp - desired_temp))<temp_thresh)
 
     #negative value mean inside better, mean close window
     window = w_t * temp_cont + w_h * humid_cont + w_a * air_cont   
 
     if(temp_achievable):
+        ac_status = "off"
+        heater_status = "off"
+    #not achievable
+    elif(temp_achievable==0):
         if(int_temp-desired_temp)<0:
             ac_status = "off"
             heater_status = "on"
@@ -228,12 +230,15 @@ ext_tvoc = 0
 heater_status = "off"
 ac_status = "off"
 window_status = "open"  #0 is open
+int_temp = 0
+int_humid = 0
+int_tvoc = 0
 
 while(1):
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    int_temp = read_temp()  #do we need sleeps?
-    int_humid = read_humid()
-    int_tvoc = read_tvoc()
+    int_temp = read_temp(int_temp)  #do we need sleeps?
+    int_humid = read_humid(int_humid)
+    int_tvoc = read_tvoc(int_tvoc)
 
     window_status, heater_status, ac_status = process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_humid,ext_humid,int_tvoc,ext_tvoc,window_status,heater_status,ac_status)
 
