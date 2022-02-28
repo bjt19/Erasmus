@@ -54,16 +54,9 @@ def read_tvoc():         #might want to remove c02, clean up this function
     bus.i2c_rdwr(meas_co2)
     read_result  = smbus2.i2c_msg.read(0x5A, 8)
     bus.i2c_rdwr(read_result)
-    co2_high = (int.from_bytes(read_result.buf[0],'big')&(0b01111111))*256
-    co2_low = int.from_bytes(read_result.buf[1],'big')
     tvoc_high = (int.from_bytes(read_result.buf[2],'big')&(0b01111111))*256
     tvoc_low = int.from_bytes(read_result.buf[3],'big')
-    co2 = co2_high + co2_low
     tvoc = tvoc_high + tvoc_low
-    if co2>=400 and co2<=8192:
-        print("air quality: ",co2)
-    else:
-        print("invalid co2")
     if tvoc>=0 and tvoc<=1187:   #if valid then return
         print("tvoc: ", tvoc)
     else:
@@ -96,13 +89,7 @@ while(1):
     tvoc_data = read_tvoc()
 
 
-    status = {    #fix terminology?, change to strings?
-        "temp" : temp_data,
-        "humid" : humid_data,
-        "tvoc" : tvoc_data,
-    }
-
-    msg = json.dumps(status)
+    msg = str(temp_data) + "," + str(humid_data) + "," + str(tvoc_data)
     print(msg)
 
     MSG_INFO = client.publish("IC.embedded/Erasmus/ext_sensor",msg)
