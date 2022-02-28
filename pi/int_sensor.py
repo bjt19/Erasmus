@@ -1,10 +1,7 @@
 import smbus2
 import time
 import json
-import paho.mqtt.client as mqtt 
-
-#global mode
-mode = "default"   #is this an int instead?
+import paho.mqtt.client as mqtt
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -86,7 +83,7 @@ def read_tvoc():         #might want to remove c02, clean up this function
         print("invalid tvoc")
     return tvoc
 
-def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_humid,ext_humid,int_tvoc,ext_tvoc):
+def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_humid,ext_humid,int_tvoc,ext_tvoc,window_status,heater_status,ac_status):
 
     #default values
     w_t = 0.6
@@ -94,7 +91,7 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
     w_a = 0.2
     temp_thresh = 5
 
-    if mode==0 :   
+    if mode==0 :
         print("mode: default")
     elif mode==1 :
         print("mode: energy save")
@@ -118,8 +115,9 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
         w_h = 0
         w_a = 0
         temp_thresh = 9999            #infinite  
- 
+
     temp_cont = abs(int_temp - desired_temp) - abs(ext_temp - desired_temp)
+    temp_cont = (temp_cont*100)/95    #range is -10 to 85
 
     if(int_humid<min_humid):
         int_humid_cont = min_humid - int_humid
@@ -136,8 +134,11 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
         ext_humid_cont = 0
 
     humid_cont = int_humid_cont - ext_humid_cont
+    humid_cont = (humid_cont*100)/80   #range is 0 to 80
 
     air_cont =  - int_tvoc - ext_tvoc
+    air_cont = (air_cont*100)/1187    #range is 0 to 1187 
+
     temp_achievable = (abs(int_temp - desired_temp)<temp_thresh & abs(ext_temp - desired_temp)<temp_thresh)
 
     #negative value mean inside better, mean close window
@@ -180,18 +181,30 @@ client.loop_start()
 meas_humid = smbus2.i2c_msg.write(0x40,[0xe5])
 meas_temp = smbus2.i2c_msg.write(0x40,[0xe0])
 
+#initialise values
+mode = 0
+desired_temp = 24
+min_humid = 30
+max_humid = 50
+ext_temp = 20
+ext_humid = 40
+ext_tvoc = 0
+heater_status = 0
+ac_status = 0
+window_status = 0  #0 is open
+
 while(1):
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    temp_data = read_temp()  #do we need sleeps?
-    humid_data = read_humid()
-    tvoc_data = read_tvoc()
+    int_temp = read_temp()  #do we need sleeps?
+    int_humid = read_humid()
+    int_tvoc = read_tvoc()
 
-    window_status, heater_status, ac_status = process_data()
+    window_status, heater_status, ac_status = process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_humid,ext_humid,int_tvoc,ext_tvoc,window_status,heater_status,ac_status)
 
     status = {    #fix terminology?, change to strings?
-        "temp" : temp_data,
-        "humid" : humid_data,
-        "tvoc" : tvoc_data,
+        "temp" : int_temp,
+        "humid" : int_humid,
+        "tvoc" : int_tvoc,
         "window status" : window_status,
         "heater_status" : heater_status,
         "ac_status" : ac_status,

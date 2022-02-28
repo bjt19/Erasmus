@@ -64,7 +64,7 @@ def read_tvoc():         #might want to remove c02, clean up this function
         print("air quality: ",co2)
     else:
         print("invalid co2")
-    if tvoc>=0 and tvoc<=1187:
+    if tvoc>=0 and tvoc<=1187:   #if valid then return
         print("tvoc: ", tvoc)
     else:
         print("invalid tvoc")
