@@ -11,14 +11,13 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
 	print("a msg received")
-#	print(msg.topic+" "+str(msg.payload))
 	msg.payload = msg.payload.decode("utf-8")	
 
 	global desired_temp
 	global min_humid
 	global max_humid
 	global mode
-	global enable   #or on
+	global enable   #1 is on
 	if msg.topic == "IC.embedded/Erasmus/user":
 		print("msg received from user: ",msg.payload)
 		desired_temp, min_humid, max_humid, mode, enable = msg.payload.split(',')
@@ -97,7 +96,7 @@ def read_temp(curr_temp):
         print("invalid temp")
         return curr_temp
 
-def read_tvoc(curr_tvoc):         #might want to remove c02, clean up this function
+def read_tvoc(curr_tvoc):
     meas_co2 = smbus2.i2c_msg.write(0x5A,[0x02])
     bus.i2c_rdwr(meas_co2)
     read_result  = smbus2.i2c_msg.read(0x5A, 8)
@@ -138,7 +137,7 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
         w_h = 0.4
         w_a = 0.2
     elif mode == 5 :
-        print("mode: control system off") #or automation off
+        print("mode: control system off") 
         w_t = 0
         w_h = 0
         w_a = 0
@@ -165,25 +164,17 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
     humid_cont = (humid_cont*100)/80   #range is 0 to 80
 
     air_cont =   int_tvoc - ext_tvoc
-    air_cont = (air_cont*100)/1187    #range is 0 to 1187 
+    air_cont = (air_cont*100)/1187    #range is 0 to 1187
 
     #desired temp achiveable without ac/heater
     temp_achievable = ((abs(int_temp - desired_temp))<temp_thresh) or ((abs(ext_temp - desired_temp))<temp_thresh)
 
-#    print("temp_thres: ",temp_thresh)
-#    print("temp_achievable: ",temp_achievable)
-    #negative value mean inside better, mean close window
-    window = w_t * temp_cont + w_h * humid_cont + w_a * air_cont   
-
-#    print("temp_cont: ",temp_cont)
-#    print("humid_cont: ",humid_cont)
-#    print("air_cont: ",air_cont)
-#    print("window: ",window)
+    #negative value mean inside better -> close window
+    window = w_t * temp_cont + w_h * humid_cont + w_a * air_cont
 
     if(temp_achievable):
         ac_status = "off"
         heater_status = "off"
-    #not achievable
     elif(temp_achievable==0):
         if(int_temp-desired_temp)<0:
             ac_status = "off"
@@ -191,21 +182,14 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
         else:
             ac_status = "on"
             heater_status = "off"
-        #heater_status = (int_temp - desired_temp) <0
-        #ac_status = (int_temp - desired_temp) >0
-        #what happens if inside colder but outside hotter but window open, do we just let it adjust over time?
 
-#    print("pre-process window_status: ",window_status)
-    if(window<-3):  #window open
+    #so window doesnt reapetedly open/close at threshold
+    if(window<-3):
         window_status = "open"
     elif(window>3):
         window_status = "closed"
-#    print("returned window_status: ",window_status)
     return window_status, heater_status, ac_status
 
-    #led(17) = window_status
-    #led(18) = heat
-    #led(19) = cool
 
 def set_io(window_status,ac_status,heater_status):
     print("setting io")
@@ -224,17 +208,13 @@ def set_io(window_status,ac_status,heater_status):
     else:
         led_heater.off()
 
-#    print("window status: ",window_status)
-#    print("ac_status: ",ac_status)
-#    print("heater_status: ",heater_status)
-
+#setup I2c
 bus = smbus2.SMBus(1)
 
 #air quality
 setup_aq_sensors()
 
 time.sleep(0.5)
-
 
 #setup mqtt
 client = mqtt.Client()
@@ -271,23 +251,15 @@ switch = Button(17)
 
 while(1):
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    int_temp = read_temp(int_temp)  #do we need sleeps?
+    int_temp = read_temp(int_temp)
     int_humid = read_humid(int_humid)
     int_tvoc = read_tvoc(int_tvoc)
 
-    if switch.is_pressed:
+    if switch.is_pressed:   #switch turns off automation
         window_status, heater_status, ac_status = process_data(5,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_humid,ext_humid,int_tvoc,ext_tvoc,window_status,heater_status,ac_status)
     else:
         window_status, heater_status, ac_status = process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_humid,ext_humid,int_tvoc,ext_tvoc,window_status,heater_status,ac_status)
 
-#    status = {    #fix terminology?, change to strings?
-#        "temp" : int_temp,
-#        "humid" : int_humid,
-#        "tvoc" : int_tvoc,
-#        "window status" : window_status,
-#        "heater_status" : heater_status,
-#        "ac_status" : ac_status,
-#    }
 
     set_io(window_status,ac_status,heater_status)
 
@@ -297,10 +269,6 @@ while(1):
     print("temp, humidity, tvoc, window status, ac status, heater status")
     temp = str(int_temp) + "," + str(int_humid) + "," + str(int_tvoc) + "," + window_status + "," +  ac_status + "," + heater_status 
     print("msg: ",temp)
-#    print("type check: ",temp)
-#    msg = json.dumps(status)
-#    print(msg)
-#    print("mode check: ",mode)
 
     MSG_INFO = client.publish("IC.embedded/Erasmus/int_sensor",temp)
 

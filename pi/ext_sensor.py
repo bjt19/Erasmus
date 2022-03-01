@@ -1,7 +1,7 @@
 import smbus2
 import time
 import json
-import paho.mqtt.client as mqtt 
+import paho.mqtt.client as mqtt
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -57,7 +57,7 @@ def read_temp(curr_temp):
         print("invalid temp")
         return curr_temp
 
-def read_tvoc(curr_tvoc):         #might want to remove c02, clean up this function
+def read_tvoc(curr_tvoc):
     meas_co2 = smbus2.i2c_msg.write(0x5A,[0x02])
     bus.i2c_rdwr(meas_co2)
     read_result  = smbus2.i2c_msg.read(0x5A, 8)
@@ -65,7 +65,7 @@ def read_tvoc(curr_tvoc):         #might want to remove c02, clean up this funct
     tvoc_high = (int.from_bytes(read_result.buf[2],'big')&(0b01111111))*256
     tvoc_low = int.from_bytes(read_result.buf[3],'big')
     new_tvoc = tvoc_high + tvoc_low
-    if new_tvoc>=0 and new_tvoc<=1187:   #if valid then return
+    if new_tvoc>=0 and new_tvoc<=1187:
         return new_tvoc
     else:
         print("invalid tvoc")
@@ -86,11 +86,11 @@ client.on_connect = on_connect
 client.connect("test.mosquitto.org",port=8884)
 client.loop_start()
 
-#humidity and temperature read
+#humidity and temperature reads
 meas_humid = smbus2.i2c_msg.write(0x40,[0xe5])
 meas_temp = smbus2.i2c_msg.write(0x40,[0xe0])
 
-#initialise data
+#initialise values
 temp_data = 22
 humid_data = 40
 tvoc_data = 0
@@ -101,7 +101,7 @@ while(1):
     humid_data = read_humid(humid_data)
     tvoc_data = read_tvoc(tvoc_data)
 
-
+    print("temp, humidity, tvoc")
     msg = str(temp_data) + "," + str(humid_data) + "," + str(tvoc_data)
     print(msg)
 
