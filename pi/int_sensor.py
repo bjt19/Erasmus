@@ -160,10 +160,10 @@ def process_data(mode,desired_temp,min_humid,max_humid,int_temp,ext_temp,int_hum
     else:
         ext_humid_cont = 0
 
-    humid_cont = int_humid_cont - ext_humid_cont
+    humid_cont = ext_humid_cont - int_humid_cont
     humid_cont = (humid_cont*100)/80   #range is 0 to 80
 
-    air_cont =   int_tvoc - ext_tvoc
+    air_cont =   ext_tvoc - int_tvoc
     air_cont = (air_cont*100)/1187    #range is 0 to 1187
 
     #desired temp achiveable without ac/heater
