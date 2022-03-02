@@ -112,6 +112,8 @@
         </div>
       </div>
     </div>
+
+    
     
     <div class="row mb-40">
       <div class="col-md-6 text-center mb-5 mb-lg-0">
@@ -119,13 +121,114 @@
       </div>
       <div class="col-md-6 align-self-center text-center text-md-left">
         <div class="content">
-          <p>The product uses 2 sets of Si7021 and CCS811 sensors interfaced with i2c to read the temperature, humidity and air quality values of a room's interior and exterior. It then processes the data to make a weighted decision using the relative values between the sets to create 3 output signals - window(open/closed), ac, heater. The processing depends on the selected mode and settings entered by the user using the app. The sensors and app communicate using an MQTT broker with encryption and authentication. </p>
+          <p>The product uses two sets of Si7021 and CCS811 sensors interfaced with i2c to read the temperature, humidity and air quality values of a room's interior and exterior. It then processes the data to make a weighted decision using the relative values between the sets to create three output signals - window (open/closed), AC and heater. The processing depends on the selected mode and settings entered by the user using the app. The sensors and app communicate using an MQTT broker with encryption and authentication. </p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
+<section class="section">
+	<div class="container">
+		<div class="row">
+			<div class="col-1">
+      </div>
+          <div class="col-md-10 text-center mb-5 mb-md-0">
+            <h1 class="font-weight-bold mb-4 font-size-30">Framework</h1>
+            <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/Framework.PNG" alt="Framework">
+          </div>
+        <div class="col-1">
+        </div>
+      </div>
+		</div>
+  </div>
+</section>
+
+<section class="section gallery">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h1 class="font-weight-bold">Our App</h1>
+        <h4 class="subheading">Always stay connected. Optimised for mobile.</h4>
+      </div>
+      
+      <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
+        <div class="block">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/Screenshot_App_1.jpeg" alt="App Screen 1">
+        </div>
+        <div class="product-info">
+          <p>In the App, you can choose between 5 different modes and decide which parameters to prioritise. You can choose 'default' but also 'energy saving mode' to save energy. In addition, you can chose which parameters have the highest priority for you. With snabb, you're in full control!</p>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
+        <div class="block">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/Screenshot_App_2.jpeg" alt="App Screen 2">
+        </div>
+        <div class="product-info">
+          <p>The settings screen allows the user to enter their desired temperature and humidity range, and select the operating mode. To avoid any negative health effects, humidity levels should stay between 30% and 50% over a longer period of time. If the humidity is too low, it can cause irritant cough.</p>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
+        <div class="block">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/Screenshot_App_3.jpeg" alt="App Screen 3">
+        </div>
+        <div class="product-info">
+          <p>The display panel shows current indoor temperature, humidity and air quality as well as the current status of the windows, AC and heaters. Temperature is measured in degrees Celsius, humidity as relative humidity expressed as a percentage and air quality as TVOCs in ppb. The user can enable automatic control.</p>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<section class="section">
+	<div class="container">
+		<div class="row">
+			<div class="col-1">
+      </div>
+          <div class="col-md-10 text-center mb-5 mb-md-0">
+            <h1 class="font-weight-bold mb-4 font-size-30">Settings and Operating Modes</h1>
+            <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/Table.jpeg" alt="Table with settings">
+          </div>
+        <div class="col-1">
+        </div>
+      </div>
+		</div>
+
+    <div class="row">
+      <div class="col-1">
+      </div>
+        <div class="col-md-10 align-self-center text-center text-md-center">
+          <div class="block">
+            <p class="mb-4"> </br> The table above shows the different modes available in the app, each mode has different weightings allocated to each sensor reading which is used to determine if the window should be opened or closed, the modes also have a threshold for the allowed difference in temperature relative to the desired input entered in the app, where if both the indoor and outdoor temperatures fall out of the range of the allowed temperatures, an output signal to turn on the ac or heater is generated. 
+            </p>
+          </div>
+        </div>
+    <div class="col-1">
+    </div>
+</div>
+
+	</div>
+</section>
+
+<!-- <section class="section">
+  <div class="container">
+		<div class="row">
+          <div class="col-1">
+          </div>
+            <div class="col-md-10 align-self-center text-center text-md-center">
+              <div class="block">
+                <p class="mb-4"> </br> The table above shows the different modes available in the app, each mode has different weightings allocated to each sensor reading which is used to determine if the window should be opened or closed, the modes also have a threshold for the allowed difference in temperature relative to the desired input entered in the app, where if both the indoor and outdoor temperatures fall out of the range of the allowed temperatures, an output signal to turn on the ac or heater is generated. 
+                </p>
+              </div>
+            </div>
+        <div class="col-1">
+        </div>
+    </div>
+  </div>
+</section> -->
 
 <section class="section gallery">
   <div class="container">
@@ -136,10 +239,10 @@
       
       <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
         <div class="block">
-          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/showcase-1.png" alt="Smart Home Air">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/hightech-bedroom.jpeg" alt="Bedroom">
         </div>
         <div class="product-info">
-        <h4 class="mb-2"><a href="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/products/product-1/" class="link-title">Smart Home Air</a></h4>
+        <h4 class="mb-2"><a href="" class="link-title">Bedroom for healthy sleep.</a></h4>
         </div>
       </div>
       
@@ -148,16 +251,16 @@
           <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/air_quality_london.png" alt="Office Environment IoT">
         </div>
         <div class="product-info">
-        <h4 class="mb-2"><a href="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/products/product-2/" class="link-title">Office Environment IoT</a></h4>
+        <h4 class="mb-2"><a href="" class="link-title">Office Environment IoT</a></h4>
         </div>
       </div>
       
       <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
         <div class="block">
-          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/showcase-4.png" alt="Smart Classroom">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/smart-classroom.jpeg" alt="Smart Classroom">
         </div>
         <div class="product-info">
-        <h4 class="mb-2"><a href="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/products/product-4/" class="link-title">Smart Classroom</a></h4>
+        <h4 class="mb-2"><a href="" class="link-title">Smart Classroom</a></h4>
         </div>
       </div>
       
@@ -170,31 +273,77 @@
     <div class="row">
       <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
         <div class="block">
-          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/showcase-8.png" alt="Oppo Watch">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/smart_car_7.png" alt="Smart Car">
         </div>
         <div class="product-info">
-        <h4 class="mb-2"><a href="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/products/product-8/" class="link-title">Oppo Watch</a></h4>
+        <h4 class="mb-2"><a href="" class="link-title">Smart Car</a></h4>
         </div>
       </div>
 
       <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
         <div class="block">
-          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/showcase-6.png" alt="Realme Watch">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/smart-greenhouse.png" alt="Smart Greenhouse">
         </div>
         <div class="product-info">
-        <h4 class="mb-2"><a href="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/products/product-6/" class="link-title">Realme Watch</a></h4>
+        <h4 class="mb-2"><a href="" class="link-title">Smart Greenhouses</a></h4>
         </div>
       </div>
 
       <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
         <div class="block">
-          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/showcase-5.png" alt="Redmi Watch">
+          <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/showcase/smart-hospital.jpg" alt="Smart Hospital">
         </div>
         <div class="product-info">
-        <h4 class="mb-2"><a href="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/products/product-5/" class="link-title">Redmi Watch</a></h4>
+        <h4 class="mb-2"><a href="" class="link-title">Smart Hospital Rooms</a></h4>
         </div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="heading">
+          <h2>Features Coming Soon!</h2>
+        </div>
+      </div>
+      <div class="col-md-4">
+        
+        
+    <div class="mb-40 text-center text-md-left">
+      <h4 class="font-weight-bold mb-2">System Scaling</h4>
+      <p> System scaling so that a single app can control large buildings such as schools or hospitals.
+    </p>
+    </div>
+
+    <div class="mb-40 text-center text-md-left">
+      <h4 class="font-weight-bold mb-2">Condensation Detection and Prevention</h4>
+      <p> Improvement in the algorithm and sensors so that the AC and heater signals account for interior and exterior humidity to prevent condensation on windows. Especially useful in cars. 
+    </p>
+    </div>
+
+    </div>
+    <div class="col-md-4 text-center align-self-center mb-4 mb-md-0">
+    <img class="img-fluid" src="http://cname.snabb.link.s3-website.eu-west-2.amazonaws.com/images/raspberry_exterior.png" alt="">
+    </div>
+    <div class="col-md-4">
+
+    <div class="mb-40 text-center text-md-left">
+      <h4 class="font-weight-bold mb-2">Weather Detection</h4>
+      <p>Air velocity sensor integration to account for wind speed and noise in the window control decision.</p>
+    </div>
+
+    <div class="mb-40 text-center text-md-left">
+      <h4 class="font-weight-bold mb-2">Improved Humidity Control</h4>
+      <p> Output signal for a humidifier to better control humidity.
+    </p>
+    </div>
+
+        
+      </div>
     </div>
   </div>
 </section>
